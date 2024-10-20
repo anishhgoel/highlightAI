@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const App = () => {
   const [selectedText, setSelectedText] = useState('');
@@ -17,7 +17,15 @@ const App = () => {
     }
   };
 
-  // Fetch response (analogy, example, explanation) from the backend
+  // Detect text selection anywhere on the page
+  useEffect(() => {
+    document.addEventListener('mouseup', handleTextSelect);
+    return () => {
+      document.removeEventListener('mouseup', handleTextSelect);
+    };
+  }, []);
+
+  // Fetch response (analogy, explanation, example) from the backend
   const fetchResponse = async (type) => {
     const response = await fetch(`http://localhost:5025/response?text=${selectedText}&type=${type}`);
     const data = await response.json();
@@ -27,8 +35,8 @@ const App = () => {
   };
 
   return (
-    <div onMouseUp={handleTextSelect} style={{ padding: '20px' }}>
-      <p>Highlight some text in this paragraph to get an analogy, explanation, or example.</p>
+    <div style={{ padding: '20px' }}>
+      <h3>Highlight any text to get an analogy, explanation, or example.</h3>
 
       {showOptions && (
         <div style={{ border: '1px solid black', padding: '10px', backgroundColor: '#f0f0f0', position: 'absolute', top: '100px', left: '100px' }}>
